@@ -5,29 +5,34 @@ from pytube import Search
 
 os.system('pip install pytube')
 
+def sec_to_min(seconds):
+    minutes = round(int(seconds)/60, 2)
+    return minutes
+
 def downloadAudio(directoryOutput, manual):
     if manual:
         name = input("Video name --> ")
         search = Search(name)
-        
         fin = False
         while fin == False:
-            search.results
+            i = 1
+            for v in search.results:
+                duration = sec_to_min(v.length)
+                print(f"{i}.- {v.title}\n{v.watch_url}\n{duration} minutes\n")
+                i+=1
+            
             vid_pos = input("Video position (press . to generate more videos) --> ")
             if vid_pos == ".":
                 search.get_next_results
             else:
                 fin = True
-                chosenVideo = search.results[vid_pos]
-                video = YouTube(chosenVideo)
-                video_output = video.streams.filter(only_audio=True).first()
+                chosenVideo = search.results[int(vid_pos)-1]
+                video_output = chosenVideo.streams.filter(only_audio=True).first()
                 out_file = video_output.download(directoryOutput)
                 base, ext = os.path.splitext(out_file)
                 new_file = base + '.mp3'
                 os.rename(out_file, new_file)
-                print(yt.title + " downloaded correctly.")
-        
-        
+                print(chosenVideo.title + " downloaded correctly.")
     else:
         url = input("Youtube URL to download --> ")
         yt = YouTube(url)
@@ -38,8 +43,7 @@ def downloadAudio(directoryOutput, manual):
         os.rename(out_file, new_file)
         print(yt.title + " downloaded correctly.")
     
-
-def downloadPlaylist(directoryOutput, manual):
+def downloadPlaylist(directoryOutput):
     url = input("Youtube playlist URL to download --> ")
     playlist = Playlist(url)
     for video in playlist.videos:
@@ -53,32 +57,20 @@ output_directory = '.'
 print("YOUTUBE AUDIO DOWNLOADER")
 print("1.- Single video")
 print("2.- Playlist")
-option1 = int(input(""))
+model_option = int(input(""))
 
 print("1.- Default directory(where the py script is)")
 print("2.- Insert directory")
-option2 = int(input(""))
+directory_method = int(input(""))
 
-if option2 == 1:
-    possible = True
-elif option2 == 2:
-    possible = True
-    output_directory = input("Directory --> ")
-else:
-    possible = False
+if directory_method == 2: output_directory = input("Directory --> ")
 
-if option1 == 1:
-    if possible:
-        downloadAudio(output_directory)
-    else:
-        print("Invalid option. Program finished.")
-elif option1 == 2:
-    if possible:
-        downloadPlaylist(output_directory)
-    else:
-        print("Invalid option. Program finished.")
-else:
-    print("Invalid option. Program finished.")
+print("1.- Manual search (URL)")
+print("2.- Search (Title)")
+search_method = int(input(""))
 
+manual = False
+if search_method == 2: manual = True
 
-
+if model_option == 1: downloadAudio(output_directory, manual)
+elif model_option == 2: downloadPlaylist(output_directory)
