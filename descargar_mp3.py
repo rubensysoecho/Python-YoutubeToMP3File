@@ -1,18 +1,45 @@
 import os
+from pytube import YouTube
+from pytube import Playlist
+from pytube import Search
+
 os.system('pip install pytube')
 
-def downloadAudio(directoryOutput):
-    from pytube import YouTube
-    url = input("Youtube URL to download --> ")
-    yt = YouTube(url)
-    video = yt.streams.filter(only_audio=True).first()
-    out_file = video.download(directoryOutput)
-    base, ext = os.path.splitext(out_file)
-    new_file = base + '.mp3'
-    os.rename(out_file, new_file)
-    print(yt.title + " downloaded correctly.")
-def downloadPlaylist(directoryOutput):
-    from pytube import Playlist
+def downloadAudio(directoryOutput, manual):
+    if manual:
+        name = input("Video name --> ")
+        search = Search(name)
+        
+        fin = False
+        while fin == False:
+            search.results
+            vid_pos = input("Video position (press . to generate more videos) --> ")
+            if vid_pos == ".":
+                search.get_next_results
+            else:
+                fin = True
+                chosenVideo = search.results[vid_pos]
+                video = YouTube(chosenVideo)
+                video_output = video.streams.filter(only_audio=True).first()
+                out_file = video_output.download(directoryOutput)
+                base, ext = os.path.splitext(out_file)
+                new_file = base + '.mp3'
+                os.rename(out_file, new_file)
+                print(yt.title + " downloaded correctly.")
+        
+        
+    else:
+        url = input("Youtube URL to download --> ")
+        yt = YouTube(url)
+        video = yt.streams.filter(only_audio=True).first()
+        out_file = video.download(directoryOutput)
+        base, ext = os.path.splitext(out_file)
+        new_file = base + '.mp3'
+        os.rename(out_file, new_file)
+        print(yt.title + " downloaded correctly.")
+    
+
+def downloadPlaylist(directoryOutput, manual):
     url = input("Youtube playlist URL to download --> ")
     playlist = Playlist(url)
     for video in playlist.videos:
